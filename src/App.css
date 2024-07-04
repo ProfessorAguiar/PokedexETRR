@@ -44,3 +44,12 @@ button{
   height: 36px;
   background-color: #61dafbaa;
 }
+h5{
+  font-size: 20px;
+  margin:0;
+  padding: 0;
+}
+p{
+  color: #888;
+  font-size: 20px;
+} 
