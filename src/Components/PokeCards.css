@@ -1,20 +1,17 @@
-p{
-    font-size: 12px;
-    margin: 0;
-}
-h4{
-    font-size: 24px;
-    margin: 0;
-    color: darkorange;
-    font-weight: 900;
-    text-shadow: 2px 2px black;
-}
-section{
-    display: flex;
-    align-items: center;
-    border: 2px solid black;
+.cardP{
+    width: 270px;
+    height: 430px;
+    background-color: aquamarine;
     border-radius: 12px;
-    justify-content: space-around;
-    margin: 20px;
-    padding: 8px;
+    margin:15px
+}
+h2{
+    margin: 0;
+}
+img{
+    width: 200px;
+    margin: 0;
+}
+p{
+    margin: 0;
 }
