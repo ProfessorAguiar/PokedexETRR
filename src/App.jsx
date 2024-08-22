@@ -1,7 +1,7 @@
-import './App.css'
-import PokeCards from './Components/PokeCards'
-import Titulo from './Components/Titulo'
-import { Suspense, useEffect, useState } from 'react';
+import './App.css';
+import PokeCards from './Components/PokeCards';
+import Titulo from './Components/Titulo';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -9,11 +9,20 @@ import Modal from '@mui/material/Modal';
 import axios from 'axios';
 
 export default function App() {
-  const [Pokemons, setPokemons] = useState([])
-  const pokes = []
+  const [pokemons, setPokemons] = useState([]);
   const [open, setOpen] = useState(false);
+  const [nome, setNome] = useState('');
+  const [id, setId] = useState('');
+  const [imagem, setImagem] = useState('');
+  const [tipo, setTipo] = useState('');
+  const [peso, setPeso] = useState('');
+  const [altura, setAltura] = useState('');
+  const [pokeBusca, setPokeBusca] = useState('1');
+  const [fundoImg, setFundoImg] = useState('');
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   const style = {
     position: 'absolute',
     top: '50%',
@@ -26,64 +35,65 @@ export default function App() {
     borderRadius: '20px',
     boxShadow: 24,
     p: 4,
-
   };
-  const [nome, setNome] = useState('')
-  const [id, setId] = useState('')
-  const [imagem, setImagem] = useState('')
-  const [tipo, setTipo] = useState('')
-  const [peso, setPeso] = useState('')
-  const [altura, setAltura] = useState('')
-  const [pokeBusca, setPokebusca] = useState('1')
-  const [fundoImg, setFundoImg] = useState('')
-  axios.get(`https://pokeapi.co/api/v2/pokemon/${pokeBusca}`)
-    .then(function (response) {
-      setNome(response.data.name)
-      setId(response.data.id)
-      setImagem(response.data.sprites.front_default)
-      setTipo(response.data.types[0].type.name)
-      setPeso(response.data.weight)
-      setAltura(response.data.height)
-      // console.log(response.data)
-      if (tipo == 'fire') {
-        setFundoImg('https://www.publicdomainpictures.net/pictures/400000/velka/marmoriert-rot-hintergrund-textur.jpg')
-      } else if (tipo == 'electric') {
-        setFundoImg('https://st.depositphotos.com/1605581/4781/i/450/depositphotos_47819249-stock-illustration-%20abstract-yellow-background-texture-design.jpg')
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
 
   useEffect(() => {
-    for (let i = 1; i < 11; i++) {
-      axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`)
-        .then(function (response) {
-          // console.log(response.data)
-          const PokeObj = {
-            cod: response.data.id,
-            nome: response.data.name,
-            imagem: response.data.sprites.front_default,
-            tipo: response.data.types[0].type.name,
-            peso: response.data.weight,
-            altura: response.data.height,
-          }
-          pokes.push(PokeObj)
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-    }
-    console.log(pokes)
-    setPokemons(pokes)
-  }, [])
+    // Function to fetch Pokémon data
+    const fetchPokemons = async () => {
+      try {
+        const pokemonPromises = [];
+        for (let i = 1; i <= 10; i++) {
+          pokemonPromises.push(axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`));
+        }
+        const responses = await Promise.all(pokemonPromises);
+        const pokes = responses.map(response => {
+          const data = response.data;
+          return {
+            cod: data.id,
+            nome: data.name,
+            imagem: data.sprites.front_default,
+            tipo: data.types[0].type.name,
+            peso: data.weight,
+            altura: data.height,
+          };
+        });
+        setPokemons(pokes);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    fetchPokemons();
+  }, []);
+
+  useEffect(() => {
+    const fetchPokemonDetails = async () => {
+      try {
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokeBusca}`);
+        setNome(response.data.name);
+        setId(response.data.id);
+        setImagem(response.data.sprites.front_default);
+        setTipo(response.data.types[0].type.name);
+        setPeso(response.data.weight);
+        setAltura(response.data.height);
+        if (response.data.types[0].type.name === 'fire') {
+          setFundoImg('https://www.publicdomainpictures.net/pictures/400000/velka/marmoriert-rot-hintergrund-textur.jpg');
+        } else if (response.data.types[0].type.name === 'electric') {
+          setFundoImg('https://st.depositphotos.com/1605581/4781/i/450/depositphotos_47819249-stock-illustration-%20abstract-yellow-background-texture-design.jpg');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchPokemonDetails();
+  }, [pokeBusca]);
 
   return (
     <>
       <Titulo />
       <form>
-        <input type="text" name="pokemon" id="pokemon" onChange={e => setPokebusca(e.target.value)} />
+        <input type="text" name="pokemon" id="pokemon" onChange={e => setPokeBusca(e.target.value)} />
         <Button onClick={handleOpen}>buscar</Button>
         <div>
           <Modal
@@ -97,20 +107,19 @@ export default function App() {
                 <h4>{nome}({id})</h4>
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                <img style={{ width: "230px", padding: 0, margin: 0 }} src={imagem} />
-                <h5>Tipo:{tipo}</h5>
-                <h5>Altura:{altura}</h5>
-                <h5>Peso:{peso}</h5>
+                <img style={{ width: "230px", padding: 0, margin: 0 }} src={imagem} alt={nome} />
+                <h5>Tipo: {tipo}</h5>
+                <h5>Altura: {altura}</h5>
+                <h5>Peso: {peso}</h5>
               </Typography>
             </Box>
           </Modal>
         </div>
       </form>
       <div className='CardsP'>
-      {
-        Pokemons.map((p) =>
+        {pokemons.map(p => (
           <PokeCards
-            
+            key={p.cod} // Adding a key prop for React list rendering
             cod={p.cod}
             nome={p.nome}
             imagem={p.imagem}
@@ -118,9 +127,8 @@ export default function App() {
             altura={p.altura}
             peso={p.peso}
           />
-        )
-      }
-</div>
+        ))}
+      </div>
     </>
-  )
+  );
 }
