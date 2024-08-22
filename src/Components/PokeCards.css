@@ -1,15 +1,20 @@
 .cardP{
-    width: 270px;
-    height: 430px;
+    width: 230px;
+    height: 280px;
     background-color: aquamarine;
     border-radius: 12px;
-    margin:15px
+    margin:10px
 }
 h2{
     margin: 0;
 }
-img{
-    width: 200px;
+h3{
+    margin: 0;
+}
+.cardP img{
+    object-fit: none;
+    width: 230px;
+    height: 90px;
     margin: 0;
 }
 p{

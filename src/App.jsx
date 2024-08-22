@@ -38,35 +38,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Function to fetch Pokémon data
-    const fetchPokemons = async () => {
-      try {
-        const pokemonPromises = [];
-        for (let i = 1; i <= 10; i++) {
-          pokemonPromises.push(axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`));
-        }
-        const responses = await Promise.all(pokemonPromises);
-        const pokes = responses.map(response => {
-          const data = response.data;
-          return {
-            cod: data.id,
-            nome: data.name,
-            imagem: data.sprites.front_default,
-            tipo: data.types[0].type.name,
-            peso: data.weight,
-            altura: data.height,
-          };
-        });
-        setPokemons(pokes);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchPokemons();
-  }, []);
-
-  useEffect(() => {
     const fetchPokemonDetails = async () => {
       try {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokeBusca}`);
@@ -89,12 +60,67 @@ export default function App() {
     fetchPokemonDetails();
   }, [pokeBusca]);
 
+  const carrega = async (i1, i2) => {
+    try {
+      const pokemonPromises = [];
+      for (let i = i1; i <= i2; i++) {
+        pokemonPromises.push(axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`));
+      }
+      const responses = await Promise.all(pokemonPromises);
+      const pokes = responses.map(response => {
+        const data = response.data;
+        return {
+          cod: data.id,
+          nome: data.name,
+          imagem: data.sprites.front_default,
+          tipo: data.types[0].type.name,
+          peso: data.weight,
+          altura: data.height,
+        };
+      });
+      setPokemons(pokes);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const carregaT = async (tipo) => {
+    try {
+      const pokemonPromises = [];
+      for (let i = 1; i <= 250; i++) {
+        pokemonPromises.push(axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`));
+      }
+      const responses = await Promise.all(pokemonPromises);
+      const pokes = responses
+        .map(response => {
+          const data = response.data;
+          if (data.types[0].type.name === tipo) {
+            return {
+              cod: data.id,
+              nome: data.name,
+              imagem: data.sprites.front_default,
+              tipo: data.types[0].type.name,
+              peso: data.weight,
+              altura: data.height,
+            };
+          }
+          return null; // Return null for non-matching types
+        })
+        .filter(poke => poke !== null); // Filter out null values
+      setPokemons(pokes);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <Titulo />
       <form>
         <input type="text" name="pokemon" id="pokemon" onChange={e => setPokeBusca(e.target.value)} />
-        <Button onClick={handleOpen}>buscar</Button>
+        <Button onClick={handleOpen} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#333333', margin: '5px', backgroundColor: '#0234fdf1' }}>
+          buscar
+        </Button>
         <div>
           <Modal
             open={open}
@@ -104,7 +130,7 @@ export default function App() {
           >
             <Box sx={style} style={{ backgroundImage: `URL(${fundoImg})` }}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
-                <h4>{nome}({id})</h4>
+                <h4>{nome} ({id})</h4>
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                 <img style={{ width: "230px", padding: 0, margin: 0 }} src={imagem} alt={nome} />
@@ -116,10 +142,34 @@ export default function App() {
           </Modal>
         </div>
       </form>
+      <Button onClick={() => carrega(1, 10)} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        1-10
+      </Button>
+      <Button onClick={() => carrega(11, 51)} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        11-51
+      </Button>
+      <Button onClick={() => carrega(52, 99)} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        52-99
+      </Button>
+      <Button onClick={() => carrega(100, 140)} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        100-140
+      </Button>
+      <Button onClick={() => carregaT('normal')} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        NORMAL
+      </Button>
+      <Button onClick={() => carregaT('water')} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        ÁGUA
+      </Button>
+      <Button onClick={() => carregaT('fire')} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        FOGO
+      </Button>
+      <Button onClick={() => carregaT('electric')} style={{ fontSize: '13px', height: '23px', fontWeight: '700', color: '#fff', margin: '5px', backgroundColor: '#101010b9' }}>
+        ELETRICIDADE
+      </Button>
       <div className='CardsP'>
         {pokemons.map(p => (
           <PokeCards
-            key={p.cod} // Adding a key prop for React list rendering
+            key={p.cod}
             cod={p.cod}
             nome={p.nome}
             imagem={p.imagem}

@@ -40,9 +40,9 @@
 .read-the-docs {
   color: #888;
 }
-button{
+.botao{
   height: 36px;
-  background-color: #61dafbaa;
+  background-color: #101010b9;
 }
 h5{
   font-size: 20px;
@@ -55,7 +55,7 @@ p{
 } 
 .CardsP{
   display:flex;
-  width: 100Vw;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
 }
